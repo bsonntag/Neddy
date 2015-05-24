@@ -41,7 +41,7 @@ public final class Files {
             readSmallFile(fileChannel, size, handler);
         }
         else {
-            
+            throw new IllegalArgumentException("File is too big.");
         }
     }
 
