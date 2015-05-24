@@ -8,12 +8,12 @@ import java.io.IOException;
 import static io.bsonntag.neddy.http.HttpHeaderField.contentType;
 
 /**
- * Main
+ * Example
  *
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 22/mai/2015
  */
-public class Main {
+public class Example {
 
     public static void main(String[] args) throws IOException {
         Http.createServer((req, res) -> {
