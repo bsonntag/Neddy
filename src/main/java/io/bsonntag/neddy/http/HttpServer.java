@@ -1,5 +1,5 @@
 
-package io.bsonntag.neddy;
+package io.bsonntag.neddy.http;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.bootstrap.ServerChannelFactory;
@@ -10,18 +10,18 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
 
 /**
- * Server
+ * HttpServer
  *
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 22/mai/2015
  */
-public final class Server {
+public final class HttpServer {
     
     private final EventLoopGroup bossGroup;
     private final EventLoopGroup workerGroup;
     private final ServerBootstrap serverBootstrap;
 
-    public Server(EventLoopGroup bossGroup,
+    public HttpServer(EventLoopGroup bossGroup,
             EventLoopGroup workerGroup,
             ServerChannelFactory<ServerSocketChannel> channelFactory,
             ChannelInitializer channelInitializer) {

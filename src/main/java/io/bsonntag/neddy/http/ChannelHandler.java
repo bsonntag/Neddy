@@ -18,8 +18,8 @@ final class ChannelHandler extends SimpleChannelInboundHandler<HttpRequest> {
     
     private final RequestHandler handler;
 
-    ChannelHandler(HttpHandler handler) {
-        this.handler = new RequestHandler(handler);
+    ChannelHandler(HttpRequestListener requestListener) {
+        this.handler = new RequestHandler(requestListener);
     }
 
     @Override
@@ -32,12 +32,12 @@ final class ChannelHandler extends SimpleChannelInboundHandler<HttpRequest> {
     
     private static class RequestHandler {
 
-        private final HttpHandler handler;
+        private final HttpRequestListener requestListener;
         private io.bsonntag.neddy.http.HttpRequest request;
         private io.bsonntag.neddy.http.HttpResponse response;
 
-        RequestHandler(HttpHandler handler) {
-            this.handler = handler;
+        RequestHandler(HttpRequestListener requestListener) {
+            this.requestListener = requestListener;
         }
         
         public io.netty.handler.codec.http.HttpResponse
@@ -46,7 +46,7 @@ final class ChannelHandler extends SimpleChannelInboundHandler<HttpRequest> {
             response = new io.bsonntag.neddy.http.HttpResponse();
 
             try {
-                handler.accept(request, response);
+                requestListener.handle(request, response);
             }
             catch(Exception ex) {
                 response = new io.bsonntag.neddy.http.HttpResponse();

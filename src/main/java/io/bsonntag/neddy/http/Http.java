@@ -1,7 +1,6 @@
 
 package io.bsonntag.neddy.http;
 
-import io.bsonntag.neddy.Server;
 import io.netty.bootstrap.ServerChannelFactory;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -24,28 +23,28 @@ public final class Http {
     private static final ServerChannelFactory<ServerSocketChannel> channelFactory =
             (eventLoop, childGroup) -> new NioServerSocketChannel(eventLoop, childGroup);
     
-    public static Server createServer(HttpHandler handler) {
-        return new Server(
+    public static HttpServer createServer(HttpRequestListener requestListener) {
+        return new HttpServer(
                 new NioEventLoopGroup(),
                 new NioEventLoopGroup(),
                 channelFactory,
-                new HttpInitializer(handler));
+                new HttpInitializer(requestListener));
     }
     
     private static class HttpInitializer extends ChannelInitializer<SocketChannel> {
         
-        private final HttpHandler httpHandler;
+        private final HttpRequestListener requestListener;
 
-        private HttpInitializer(HttpHandler httpHandler) {
-            this.httpHandler = httpHandler;
+        private HttpInitializer(HttpRequestListener requestListener) {
+            this.requestListener = requestListener;
         }
         
         @Override
-        protected void initChannel(SocketChannel ch) throws Exception {
-            ch.pipeline()
+        protected void initChannel(SocketChannel channel) throws Exception {
+            channel.pipeline()
                     .addLast("decoder", new HttpRequestDecoder())
                     .addLast("encoder", new HttpResponseEncoder())
-                    .addLast("handler", new ChannelHandler(httpHandler));
+                    .addLast("handler", new ChannelHandler(requestListener));
         }
         
     }
