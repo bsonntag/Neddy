@@ -14,15 +14,22 @@ final class SmallReadCompletionHandler implements CompletionHandler<Integer, Obj
     
     private final ReadHandler readHandler;
     private final ByteBuffer buffer;
-
-    SmallReadCompletionHandler(ReadHandler readHandler, ByteBuffer buffer) {
+    private final int amount;
+    
+    SmallReadCompletionHandler(ReadHandler readHandler, ByteBuffer buffer, int amount) {
         this.readHandler = readHandler;
         this.buffer = buffer;
+        this.amount = amount;
     }
 
     @Override
     public void completed(Integer result, Object attachment) {
-        readHandler.accept(buffer, null);
+        if(result < amount) {
+            readHandler.accept(buffer, new Exception("Couldn't read all file."));
+        }
+        else {
+            readHandler.accept(buffer, null);
+        }
     }
 
     @Override
