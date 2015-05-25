@@ -1,13 +1,14 @@
 
 package io.bsonntag.neddy.http;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * HttpHeader
@@ -20,15 +21,11 @@ public final class HttpHeader implements Iterable<HttpHeaderField> {
     private final Map<String, HttpHeaderField> fields;
 
     public HttpHeader(HttpHeaderField... fields) {
-        this.fields = new HashMap<>();
-        for(HttpHeaderField field : fields) {
-            this.fields.compute(field.getName(),
-                    (k, v) -> v == null ? field : v.merge(field));
-        }
+        this.fields = toMap(Arrays.stream(fields));
     }
 
     public HttpHeader(List<HttpHeaderField> fields) {
-        this.fields = fields.stream().collect(toMap());
+        this.fields = toMap(fields.stream());
     }
     
     public HttpHeaderField get(String name) {
@@ -44,13 +41,13 @@ public final class HttpHeader implements Iterable<HttpHeaderField> {
         return fields.values().iterator();
     }
     
-    private Collector<HttpHeaderField, ?, Map<String, HttpHeaderField>> toMap() {
-        return Collectors.toMap(
+    private Map<String, HttpHeaderField> toMap(Stream<HttpHeaderField> fieldStream) {
+        return fieldStream.collect(Collectors.toMap(
                 HttpHeaderField::getName,
                 Function.identity(),
                 HttpHeaderField::merge,
                 HashMap::new
-        );
+        ));
     }
     
 }
