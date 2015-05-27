@@ -24,7 +24,7 @@ class ResponseConverter {
     private final HttpResponse response;
     private io.netty.handler.codec.http.HttpResponse nettyResponse;
 
-    public ResponseConverter(HttpResponse response) {
+    private ResponseConverter(HttpResponse response) {
         this.response = response;
     }
     

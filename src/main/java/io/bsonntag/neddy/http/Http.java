@@ -1,8 +1,7 @@
 
 package io.bsonntag.neddy.http;
 
-import io.bsonntag.neddy.http.events.DefaultServerErrorListener;
-import io.bsonntag.neddy.http.events.HttpRequestListener;
+import io.bsonntag.neddy.events.BiEventListener;
 import io.netty.bootstrap.ServerChannelFactory;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
@@ -29,15 +28,15 @@ public final class Http {
     private static final ServerChannelFactory<ServerSocketChannel> channelFactory =
             (eventLoop, childGroup) -> new NioServerSocketChannel(eventLoop, childGroup);
     
-    public static HttpServer createServer(HttpRequestListener requestListener) {
+    public static HttpServer createServer(
+            BiEventListener<HttpRequest, HttpResponse> requestListener) {
         HttpEventBus eventBus = new HttpEventBus();
         HttpServer server = new HttpServer(
                 eventLoopFactory,
                 channelFactory,
                 new HttpInitializer(eventBus),
                 eventBus);
-        return server.onRequest(requestListener)
-                .onServerError(DefaultServerErrorListener.get());
+        return server.onRequest(requestListener);
     }
     
     private static class HttpInitializer extends ChannelInitializer<SocketChannel> {

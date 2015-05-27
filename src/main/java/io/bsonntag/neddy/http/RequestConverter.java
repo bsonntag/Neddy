@@ -11,7 +11,6 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 
-
 /**
  * RequestConverter
  *
@@ -30,7 +29,7 @@ class RequestConverter {
     
     private final io.netty.handler.codec.http.HttpRequest nettyRequest;
 
-    RequestConverter(io.netty.handler.codec.http.HttpRequest nettyRequest) {
+    private RequestConverter(io.netty.handler.codec.http.HttpRequest nettyRequest) {
         this.nettyRequest = nettyRequest;
     }
     
