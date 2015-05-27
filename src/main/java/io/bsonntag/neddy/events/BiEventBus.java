@@ -32,8 +32,14 @@ public final class BiEventBus<A, B> {
         eventListeners.clear();
     }
     
-    public void emit(A a, B b) {
-        eventListeners.stream().forEach((listener) -> listener.handle(a, b));
+    public boolean emit(A a, B b) {
+        if(eventListeners.isEmpty()) {
+            return false;
+        }
+        else {
+            eventListeners.stream().forEach((listener) -> listener.handle(a, b));
+            return true;
+        }
     }
     
 }

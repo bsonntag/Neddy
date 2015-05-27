@@ -17,6 +17,8 @@ public class Example {
 
     public static void main(String[] args) throws IOException {
         Http.createServer((req, res) -> {
+            System.out.println("request");
+            System.out.println(req.getPath());
             res.writeHead(200, new HttpHeader(contentType("text/html; charset=UTF-8")));
             res.write("Hello World!");
         }).listen(3000);

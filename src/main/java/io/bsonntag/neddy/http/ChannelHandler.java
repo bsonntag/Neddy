@@ -3,10 +3,7 @@ package io.bsonntag.neddy.http;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
 
-import static io.bsonntag.neddy.http.HttpHeaderField.contentType;
 
 /**
  * ChannelHandler
@@ -16,47 +13,29 @@ import static io.bsonntag.neddy.http.HttpHeaderField.contentType;
  */
 final class ChannelHandler extends SimpleChannelInboundHandler<HttpRequest> {
     
-    private final RequestHandler handler;
+    private final HttpEventBus eventBus;
 
-    ChannelHandler(HttpRequestListener requestListener) {
-        this.handler = new RequestHandler(requestListener);
+    ChannelHandler(HttpEventBus eventBus) {
+        this.eventBus = eventBus;
     }
 
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, HttpRequest request) {
-        HttpResponse response = handler.handle(request);
+        HttpResponse response = new HttpResponse();
+        eventBus.emitRequestEvent(request, response);
+        sendResponse(ctx, response);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable exception) {
+        HttpResponse response = new HttpResponse();
+        eventBus.emitServerErrorEvent(exception, response);
+        sendResponse(ctx, response);
+    }
+
+    private void sendResponse(ChannelHandlerContext ctx, HttpResponse response) {
         ctx.writeAndFlush(response);
         ctx.close();
-    }
-    
-    
-    private static class RequestHandler {
-
-        private final HttpRequestListener requestListener;
-        private io.bsonntag.neddy.http.HttpRequest request;
-        private io.bsonntag.neddy.http.HttpResponse response;
-
-        RequestHandler(HttpRequestListener requestListener) {
-            this.requestListener = requestListener;
-        }
-        
-        public io.netty.handler.codec.http.HttpResponse
-                    handle(io.netty.handler.codec.http.HttpRequest nettyRequest) {
-            request = RequestConverter.convert(nettyRequest);
-            response = new io.bsonntag.neddy.http.HttpResponse();
-
-            try {
-                requestListener.handle(request, response);
-            }
-            catch(Exception ex) {
-                response = new io.bsonntag.neddy.http.HttpResponse();
-                response.writeHead(500, new HttpHeader(contentType("text/plain")));
-                response.write(ex.toString());
-            }
-
-            return ResponseConverter.convert(response);
-        }
-
     }
     
 }

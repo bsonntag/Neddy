@@ -1,6 +1,8 @@
 
 package io.bsonntag.neddy.http;
 
+import io.bsonntag.neddy.http.events.HttpRequestListener;
+import io.bsonntag.neddy.http.events.HttpServerErrorListener;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.bootstrap.ServerChannelFactory;
 import io.netty.channel.Channel;
@@ -8,6 +10,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
+import java.util.function.Supplier;
 
 /**
  * HttpServer
@@ -20,18 +23,32 @@ public final class HttpServer {
     private final EventLoopGroup bossGroup;
     private final EventLoopGroup workerGroup;
     private final ServerBootstrap serverBootstrap;
+    
+    private final HttpEventBus eventBus;
 
-    public HttpServer(EventLoopGroup bossGroup,
-            EventLoopGroup workerGroup,
+    HttpServer(Supplier<EventLoopGroup> eventLoopFactory,
             ServerChannelFactory<ServerSocketChannel> channelFactory,
-            ChannelInitializer channelInitializer) {
-        this.bossGroup = bossGroup;
-        this.workerGroup = workerGroup;
+            ChannelInitializer channelInitializer,
+            HttpEventBus eventBus) {
+        this.bossGroup = eventLoopFactory.get();
+        this.workerGroup = eventLoopFactory.get();
+        
+        this.eventBus = eventBus;
         
         serverBootstrap = new ServerBootstrap()
                 .group(bossGroup, workerGroup)
                 .channelFactory(channelFactory)
                 .childHandler(channelInitializer);
+    }
+    
+    public HttpServer onRequest(HttpRequestListener listener) {
+        eventBus.onRequest(listener);
+        return this;
+    }
+    
+    public HttpServer onServerError(HttpServerErrorListener listener) {
+        eventBus.onServerError(listener);
+        return this;
     }
     
     public void listen(int port) {

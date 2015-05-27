@@ -36,8 +36,14 @@ public final class EventBus<T> {
         eventListeners.clear();
     }
     
-    public void emit(T event) {
-        eventListeners.stream().forEach((listener) -> listener.handle(event));
+    public boolean emit(T event) {
+        if(eventListeners.isEmpty()) {
+            return false;
+        }
+        else {
+            eventListeners.stream().forEach((listener) -> listener.handle(event));
+            return true;
+        }
     }
 
 }
