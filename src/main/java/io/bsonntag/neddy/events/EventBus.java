@@ -17,18 +17,18 @@ public final class EventBus<T> {
     private final List<EventListener<T>> eventListeners;
 
     public EventBus() {
-        this.eventListeners = new ArrayList<>();
+        eventListeners = new ArrayList<>();
     }
     
     public List<EventListener<T>> getListeners() {
         return Collections.unmodifiableList(eventListeners);
     }
     
-    public void addListener(EventListener listener) {
+    public void addListener(EventListener<T> listener) {
         eventListeners.add(listener);
     }
     
-    public void removeListener(EventListener listener) {
+    public void removeListener(EventListener<T> listener) {
         eventListeners.remove(listener);
     }
     
