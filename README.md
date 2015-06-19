@@ -7,7 +7,7 @@ Requires JDK 8.
 
 ```
 Http.createServer((req, res) -> {
-    res.writeHead(200, new HttpHeader(contentType("text/html; charset=UTF-8")));
+    res.writeHead(200, new HttpHeader(contentType("text/plain")));
     res.write("Hello World!");
 }).listen(3000);
 ```
