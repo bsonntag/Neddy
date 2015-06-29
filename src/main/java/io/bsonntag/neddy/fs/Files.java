@@ -63,6 +63,10 @@ public final class Files {
                 new SmallReadCompletionHandler(handler, buffer, size));
     }
     
+    public static ReadableFileStream createReadStream(String path) throws IOException {
+        return new ReadableFileStream(open(Paths.get(path), readOptions), threadPool);
+    }
+    
     public static void writeFile(String path, ByteBuffer data, WriteHandler handler) {
         try {
             writeFile(Paths.get(path), data, handler);
