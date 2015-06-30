@@ -12,9 +12,11 @@ public class HttpResponse {
     private int status;
     private HttpHeader header;
     private String content;
+    private boolean ended;
 
     HttpResponse() {
         content = "";
+        ended = false;
     }
 
     public int getStatus() {
@@ -27,6 +29,10 @@ public class HttpResponse {
 
     public String getContent() {
         return content;
+    }
+
+    public boolean isEnded() {
+        return ended;
     }
     
     public HttpResponse writeHead(int status) {
@@ -43,6 +49,15 @@ public class HttpResponse {
     public HttpResponse write(String content) {
         this.content += content;
         return this;
+    }
+    
+    public void end() {
+        this.ended = true;
+    }
+    
+    public void end(String content) {
+        this.content += content;
+        end();
     }
     
 }
